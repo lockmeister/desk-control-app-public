@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: #1a1a1a;
             min-height: 100vh;
             display: flex;
@@ -25,88 +25,75 @@
 
         .container {
             background: #2d2d2d;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            max-width: 400px;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 380px;
             width: 100%;
             border: 1px solid #3d3d3d;
         }
 
-        h1 {
+        .header {
             text-align: center;
-            color: #fff;
-            margin-bottom: 5px;
-            font-size: 28px;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #888;
             margin-bottom: 20px;
-            font-size: 13px;
         }
 
-        .subtitle a {
+        .header a {
             color: #6b9eff;
             text-decoration: none;
+            font-size: 14px;
         }
 
-        .subtitle a:hover {
+        .header a:hover {
             text-decoration: underline;
         }
 
         .height-display {
-            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            background: #3d3d3d;
             color: white;
-            padding: 30px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
-            margin-bottom: 20px;
-            border: 1px solid #4a5568;
+            margin-bottom: 15px;
+            border: 1px solid #4d4d4d;
         }
 
         .height-value {
-            font-size: 48px;
+            font-size: 42px;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .height-label {
-            font-size: 14px;
-            opacity: 0.8;
+            font-size: 13px;
+            opacity: 0.7;
         }
 
         .status {
             text-align: center;
-            padding: 10px;
+            padding: 8px;
             border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
         .status.disconnected {
             background: #3d2626;
             color: #ff6b6b;
-            border: 1px solid #5d3636;
         }
 
         .status.connected {
             background: #263d26;
             color: #51cf66;
-            border: 1px solid #365d36;
         }
 
         button {
             width: 100%;
-            padding: 20px;
             border: none;
-            border-radius: 12px;
-            font-size: 18px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s;
-            margin-bottom: 12px;
+            transition: all 0.15s;
+            margin-bottom: 10px;
         }
 
         button:active {
@@ -121,7 +108,8 @@
         .btn-connect {
             background: #4a5568;
             color: white;
-            border: 1px solid #5a6578;
+            padding: 16px;
+            font-size: 16px;
         }
 
         .btn-connect:hover:not(:disabled) {
@@ -130,8 +118,8 @@
 
         .btn-up,
         .btn-down {
-            font-size: 24px;
-            padding: 30px;
+            font-size: 20px;
+            padding: 24px;
             font-weight: 700;
         }
 
@@ -153,26 +141,35 @@
             background: #4dabf7;
         }
 
-        .btn-memory {
-            background: #3d3d3d;
-            color: #e0e0e0;
-            border: 1px solid #4d4d4d;
-            padding: 16px;
-            font-size: 15px;
-        }
-
-        .btn-memory:hover:not(:disabled) {
-            background: #4d4d4d;
-        }
-
         .btn-stop {
             background: #3d2626;
             color: #ff6b6b;
+            padding: 18px;
+            font-size: 16px;
             border: 1px solid #5d3636;
         }
 
         .btn-stop:hover:not(:disabled) {
             background: #4d3636;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn-memory {
+            background: #3d3d3d;
+            color: #e0e0e0;
+            border: 1px solid #4d4d4d;
+            padding: 14px;
+            font-size: 14px;
+        }
+
+        .btn-memory:hover:not(:disabled) {
+            background: #4d4d4d;
         }
 
         .controls {
@@ -183,35 +180,18 @@
             display: block;
         }
 
-        .button-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 12px;
+        .landing {
+            display: block;
         }
 
-        .info {
-            text-align: center;
-            color: #888;
-            font-size: 12px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #3d3d3d;
-        }
-
-        .info code {
-            background: #3d3d3d;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 11px;
-            color: #6b9eff;
+        .landing.hidden {
+            display: none;
         }
 
         details {
-            margin: 15px 0;
+            margin: 12px 0;
             background: #3d3d3d;
-            padding: 12px;
+            padding: 10px;
             border-radius: 8px;
             border: 1px solid #4d4d4d;
         }
@@ -220,7 +200,7 @@
             cursor: pointer;
             color: #6b9eff;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12px;
             user-select: none;
         }
 
@@ -229,60 +209,77 @@
         }
 
         details[open] summary {
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         details .content {
-            text-align: left;
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 11px;
+            line-height: 1.5;
             color: #b0b0b0;
         }
 
-        details .content strong {
-            color: #e0e0e0;
-        }
-
         details ul {
-            margin: 8px 0;
-            padding-left: 20px;
+            margin: 6px 0;
+            padding-left: 18px;
         }
 
         details li {
-            margin: 4px 0;
+            margin: 3px 0;
+        }
+
+        .note {
+            text-align: center;
+            color: #888;
+            font-size: 11px;
+            margin-top: 12px;
+        }
+
+        .note em {
+            color: #ff9966;
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <h1>🪑 Stand Desk Control</h1>
-        <p class="subtitle">
-            For <a href="https://standdesk.com.au/support/how-to-use-guide-stand-desk-pro-essential/"
-                target="_blank">Stand Desk Pro Essential</a>
-        </p>
-
-        <details>
-            <summary>✨ Why use this instead of the official app?</summary>
-            <div class="content">
-                <ul>
-                    <li>✓ Works on desktop (Windows, Mac, Linux)</li>
-                    <li>✓ No installation required</li>
-                    <li>✓ No app store, no permissions</li>
-                    <li>✓ Lightweight & fast (~10KB vs 36MB)</li>
-                    <li>✓ Privacy-focused (no tracking)</li>
-                    <li>✓ Open source & auditable</li>
-                </ul>
-            </div>
-        </details>
+        <div class="header">
+            <a href="https://standdesk.com.au/support/how-to-use-guide-stand-desk-pro-essential/" target="_blank">Stand
+                Desk Pro Essential</a>
+        </div>
 
         <div class="height-display">
             <div class="height-value" id="height">--</div>
             <div class="height-label">Height (cm)</div>
         </div>
 
-        <div class="status disconnected" id="status">
-            Not Connected
+        <div class="status disconnected" id="status">Not Connected</div>
+
+        <div class="landing" id="landing">
+            <details>
+                <summary>✨ Why use this?</summary>
+                <div class="content">
+                    <ul>
+                        <li>Works on desktop & Android</li>
+                        <li>No installation required</li>
+                        <li>Lightweight & fast</li>
+                        <li>Privacy-focused</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>📋 Setup</summary>
+                <div class="content">
+                    <strong>Desktop:</strong> Enable Bluetooth → Click Connect<br><br>
+                    <strong>Android:</strong> Enable Bluetooth & Location → Grant permissions<br><br>
+                    <em>⚠️ Android needs Location ON to find BLE devices</em>
+                </div>
+            </details>
+
+            <div class="note">
+                Chrome or Edge required<br>
+                <em>Android: Location must be enabled</em>
+            </div>
         </div>
 
         <button class="btn-connect" id="connectBtn" onclick="connect()">
@@ -290,53 +287,15 @@
         </button>
 
         <div class="controls" id="controls">
-            <button class="btn-up" id="upBtn">
-                ↑ UP
-            </button>
-
-            <button class="btn-down" id="downBtn">
-                ↓ DOWN
-            </button>
+            <button class="btn-up" id="upBtn">↑ UP</button>
+            <button class="btn-down" id="downBtn">↓ DOWN</button>
 
             <div class="button-row">
-                <button class="btn-memory" onclick="sendCommand('mem1')">
-                    Memory 1
-                </button>
-                <button class="btn-memory" onclick="sendCommand('mem2')">
-                    Memory 2
-                </button>
+                <button class="btn-memory" onclick="sendCommand('mem1')">MEM 1</button>
+                <button class="btn-memory" onclick="sendCommand('mem2')">MEM 2</button>
             </div>
 
-            <button class="btn-stop" onclick="sendCommand('stop')">
-                ■ STOP
-            </button>
-        </div>
-
-        <div class="info">
-            <strong>Requirements:</strong><br>
-            Chrome or Edge • Bluetooth enabled<br>
-            <br>
-            <details>
-                <summary>📋 Setup Instructions</summary>
-                <div class="content">
-                    <strong>Desktop:</strong><br>
-                    1. Enable Bluetooth<br>
-                    2. Open in Chrome/Edge<br>
-                    3. Click "Connect to Desk"<br>
-                    <br>
-                    <strong>Android:</strong><br>
-                    1. Enable Bluetooth & Location<br>
-                    2. Open in Chrome<br>
-                    3. Grant permissions<br>
-                    <br>
-                    <strong>Troubleshooting:</strong><br>
-                    • Use Chrome or Edge browser<br>
-                    • Linux: enable <code>chrome://flags/#enable-web-bluetooth</code><br>
-                    • Refresh page if connection fails<br>
-                </div>
-            </details>
-            <br>
-            <strong>Tip:</strong> Select device ending in <code>:5F:FB</code>
+            <button class="btn-stop" onclick="sendCommand('stop')">■ STOP</button>
         </div>
     </div>
 
@@ -378,7 +337,8 @@
                 document.getElementById('status').textContent = 'Connected';
                 document.getElementById('status').className = 'status connected';
                 document.getElementById('controls').classList.add('active');
-                connectBtn.textContent = 'Connected ✓';
+                document.getElementById('landing').classList.add('hidden');
+                connectBtn.style.display = 'none';
 
                 device.addEventListener('gattserverdisconnected', onDisconnected);
 
@@ -417,6 +377,8 @@
             document.getElementById('status').textContent = 'Disconnected';
             document.getElementById('status').className = 'status disconnected';
             document.getElementById('controls').classList.remove('active');
+            document.getElementById('landing').classList.remove('hidden');
+            document.getElementById('connectBtn').style.display = 'block';
             document.getElementById('connectBtn').disabled = false;
             document.getElementById('connectBtn').textContent = 'Connect to Desk';
             document.getElementById('height').textContent = '--';

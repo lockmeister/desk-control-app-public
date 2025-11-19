@@ -407,6 +407,9 @@
 
                 device.addEventListener('gattserverdisconnected', onDisconnected);
 
+                // Show install prompt after successful connection
+                showInstallPromptIfAvailable();
+
             } catch (error) {
                 console.error('Connection failed:', error);
                 document.getElementById('status').textContent = 'Connection failed';
@@ -492,11 +495,15 @@
 
         // PWA Install Prompt
         let deferredPrompt;
+        let hasConnected = false;
 
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('installBanner').classList.add('show');
+            // Only show install banner after user has connected
+            if (hasConnected) {
+                document.getElementById('installBanner').classList.add('show');
+            }
         });
 
         document.getElementById('installBtn').addEventListener('click', async () => {
@@ -514,6 +521,14 @@
         document.getElementById('dismissBtn').addEventListener('click', () => {
             document.getElementById('installBanner').classList.remove('show');
         });
+
+        // Show install banner after successful connection
+        function showInstallPromptIfAvailable() {
+            hasConnected = true;
+            if (deferredPrompt) {
+                document.getElementById('installBanner').classList.add('show');
+            }
+        }
 
         // Register service worker
         if ('serviceWorker' in navigator) {

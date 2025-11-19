@@ -2,7 +2,7 @@
   "name": "Stand Desk Control",
   "short_name": "Desk Control",
   "description": "Control your Stand Desk Pro Essential via Bluetooth",
-  "start_url": "./desk_control.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#2d2d2d",

@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stand Desk Control</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: #e0e0e0;
+        }
+
+        .container {
+            background: #2d2d2d;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid #3d3d3d;
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .subtitle a {
+            color: #6b9eff;
+            text-decoration: none;
+        }
+
+        .subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        .height-display {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 1px solid #4a5568;
+        }
+
+        .height-value {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .height-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .status.disconnected {
+            background: #3d2626;
+            color: #ff6b6b;
+            border: 1px solid #5d3636;
+        }
+
+        .status.connected {
+            background: #263d26;
+            color: #51cf66;
+            border: 1px solid #365d36;
+        }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 12px;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-connect {
+            background: #4a5568;
+            color: white;
+            border: 1px solid #5a6578;
+        }
+
+        .btn-connect:hover:not(:disabled) {
+            background: #5a6578;
+        }
+
+        .btn-up,
+        .btn-down {
+            font-size: 24px;
+            padding: 30px;
+            font-weight: 700;
+        }
+
+        .btn-up {
+            background: #51cf66;
+            color: #1a1a1a;
+        }
+
+        .btn-up:hover:not(:disabled) {
+            background: #69db7c;
+        }
+
+        .btn-down {
+            background: #339af0;
+            color: white;
+        }
+
+        .btn-down:hover:not(:disabled) {
+            background: #4dabf7;
+        }
+
+        .btn-memory {
+            background: #3d3d3d;
+            color: #e0e0e0;
+            border: 1px solid #4d4d4d;
+            padding: 16px;
+            font-size: 15px;
+        }
+
+        .btn-memory:hover:not(:disabled) {
+            background: #4d4d4d;
+        }
+
+        .btn-stop {
+            background: #3d2626;
+            color: #ff6b6b;
+            border: 1px solid #5d3636;
+        }
+
+        .btn-stop:hover:not(:disabled) {
+            background: #4d3636;
+        }
+
+        .controls {
+            display: none;
+        }
+
+        .controls.active {
+            display: block;
+        }
+
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .info {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #3d3d3d;
+        }
+
+        .info code {
+            background: #3d3d3d;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #6b9eff;
+        }
+
+        details {
+            margin: 15px 0;
+            background: #3d3d3d;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #4d4d4d;
+        }
+
+        details summary {
+            cursor: pointer;
+            color: #6b9eff;
+            font-weight: 600;
+            font-size: 13px;
+            user-select: none;
+        }
+
+        details summary:hover {
+            color: #8bb4ff;
+        }
+
+        details[open] summary {
+            margin-bottom: 10px;
+        }
+
+        details .content {
+            text-align: left;
+            font-size: 12px;
+            line-height: 1.6;
+            color: #b0b0b0;
+        }
+
+        details .content strong {
+            color: #e0e0e0;
+        }
+
+        details ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        details li {
+            margin: 4px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🪑 Stand Desk Control</h1>
+        <p class="subtitle">
+            For <a href="https://standdesk.com.au/support/how-to-use-guide-stand-desk-pro-essential/"
+                target="_blank">Stand Desk Pro Essential</a>
+        </p>
+
+        <details>
+            <summary>✨ Why use this instead of the official app?</summary>
+            <div class="content">
+                <ul>
+                    <li>✓ Works on desktop (Windows, Mac, Linux)</li>
+                    <li>✓ No installation required</li>
+                    <li>✓ No app store, no permissions</li>
+                    <li>✓ Lightweight & fast (~10KB vs 36MB)</li>
+                    <li>✓ Privacy-focused (no tracking)</li>
+                    <li>✓ Open source & auditable</li>
+                </ul>
+            </div>
+        </details>
+
+        <div class="height-display">
+            <div class="height-value" id="height">--</div>
+            <div class="height-label">Height (cm)</div>
+        </div>
+
+        <div class="status disconnected" id="status">
+            Not Connected
+        </div>
+
+        <button class="btn-connect" id="connectBtn" onclick="connect()">
+            Connect to Desk
+        </button>
+
+        <div class="controls" id="controls">
+            <button class="btn-up" id="upBtn">
+                ↑ UP
+            </button>
+
+            <button class="btn-down" id="downBtn">
+                ↓ DOWN
+            </button>
+
+            <div class="button-row">
+                <button class="btn-memory" onclick="sendCommand('mem1')">
+                    Memory 1
+                </button>
+                <button class="btn-memory" onclick="sendCommand('mem2')">
+                    Memory 2
+                </button>
+            </div>
+
+            <button class="btn-stop" onclick="sendCommand('stop')">
+                ■ STOP
+            </button>
+        </div>
+
+        <div class="info">
+            <strong>Requirements:</strong><br>
+            Chrome or Edge • Bluetooth enabled<br>
+            <br>
+            <details>
+                <summary>📋 Setup Instructions</summary>
+                <div class="content">
+                    <strong>Desktop:</strong><br>
+                    1. Enable Bluetooth<br>
+                    2. Open in Chrome/Edge<br>
+                    3. Click "Connect to Desk"<br>
+                    <br>
+                    <strong>Android:</strong><br>
+                    1. Enable Bluetooth & Location<br>
+                    2. Open in Chrome<br>
+                    3. Grant permissions<br>
+                    <br>
+                    <strong>Troubleshooting:</strong><br>
+                    • Use Chrome or Edge browser<br>
+                    • Linux: enable <code>chrome://flags/#enable-web-bluetooth</code><br>
+                    • Refresh page if connection fails<br>
+                </div>
+            </details>
+            <br>
+            <strong>Tip:</strong> Select device ending in <code>:5F:FB</code>
+        </div>
+    </div>
+
+    <script>
+        const SERVICE_UUID = '0000fe60-0000-1000-8000-00805f9b34fb';
+        const WRITE_UUID = '0000fe61-0000-1000-8000-00805f9b34fb';
+        const NOTIFY_UUID = '0000fe62-0000-1000-8000-00805f9b34fb';
+
+        const COMMANDS = {
+            up: [0xf1, 0xf1, 0x01, 0x00, 0x01, 0x7e],
+            down: [0xf1, 0xf1, 0x02, 0x00, 0x02, 0x7e],
+            stop: [0xf1, 0xf1, 0x2b, 0x00, 0x2b, 0x7e],
+            mem1: [0xf1, 0xf1, 0x05, 0x00, 0x05, 0x7e],
+            mem2: [0xf1, 0xf1, 0x06, 0x00, 0x06, 0x7e],
+        };
+
+        let device = null;
+        let writeCharacteristic = null;
+
+        async function connect() {
+            try {
+                const connectBtn = document.getElementById('connectBtn');
+                connectBtn.disabled = true;
+                connectBtn.textContent = 'Connecting...';
+
+                device = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [SERVICE_UUID] }]
+                });
+
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(SERVICE_UUID);
+
+                writeCharacteristic = await service.getCharacteristic(WRITE_UUID);
+                const notifyCharacteristic = await service.getCharacteristic(NOTIFY_UUID);
+
+                await notifyCharacteristic.startNotifications();
+                notifyCharacteristic.addEventListener('characteristicvaluechanged', handleNotification);
+
+                document.getElementById('status').textContent = 'Connected';
+                document.getElementById('status').className = 'status connected';
+                document.getElementById('controls').classList.add('active');
+                connectBtn.textContent = 'Connected ✓';
+
+                device.addEventListener('gattserverdisconnected', onDisconnected);
+
+            } catch (error) {
+                console.error('Connection failed:', error);
+                document.getElementById('status').textContent = 'Connection failed';
+                document.getElementById('connectBtn').disabled = false;
+                document.getElementById('connectBtn').textContent = 'Connect to Desk';
+            }
+        }
+
+        function handleNotification(event) {
+            const value = event.target.value;
+            const data = new Uint8Array(value.buffer);
+
+            if (data.length >= 6 && data[0] === 0xf2 && data[1] === 0xf2 && data[2] === 0x01) {
+                const heightMm = (data[4] * 256 + data[5]);
+                const heightCm = heightMm / 10;
+                document.getElementById('height').textContent = heightCm.toFixed(1);
+                document.title = `Desk: ${heightCm.toFixed(1)}cm`;
+            }
+        }
+
+        async function sendCommand(command) {
+            if (!writeCharacteristic) return;
+
+            try {
+                const cmd = new Uint8Array(COMMANDS[command]);
+                await writeCharacteristic.writeValueWithoutResponse(cmd);
+            } catch (error) {
+                console.error('Send failed:', error);
+            }
+        }
+
+        function onDisconnected() {
+            document.getElementById('status').textContent = 'Disconnected';
+            document.getElementById('status').className = 'status disconnected';
+            document.getElementById('controls').classList.remove('active');
+            document.getElementById('connectBtn').disabled = false;
+            document.getElementById('connectBtn').textContent = 'Connect to Desk';
+            document.getElementById('height').textContent = '--';
+            writeCharacteristic = null;
+        }
+
+        if (!navigator.bluetooth) {
+            document.getElementById('status').textContent = 'Web Bluetooth not supported';
+            document.getElementById('connectBtn').disabled = true;
+            document.getElementById('connectBtn').textContent = 'Not Supported';
+        }
+
+        // Hold-to-move functionality
+        let moveInterval = null;
+
+        function startMoving(command) {
+            if (moveInterval) return;
+
+            sendCommand(command);
+            moveInterval = setInterval(() => {
+                sendCommand(command);
+            }, 100);
+        }
+
+        function stopMoving() {
+            if (moveInterval) {
+                clearInterval(moveInterval);
+                moveInterval = null;
+                sendCommand('stop');
+            }
+        }
+
+        const upBtn = document.getElementById('upBtn');
+        upBtn.addEventListener('mousedown', () => startMoving('up'));
+        upBtn.addEventListener('mouseup', stopMoving);
+        upBtn.addEventListener('mouseleave', stopMoving);
+        upBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('up'); });
+        upBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopMoving(); });
+
+        const downBtn = document.getElementById('downBtn');
+        downBtn.addEventListener('mousedown', () => startMoving('down'));
+        downBtn.addEventListener('mouseup', stopMoving);
+        downBtn.addEventListener('mouseleave', stopMoving);
+        downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('down'); });
+        downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopMoving(); });
+    </script>
+</body>
+
+</html>

@@ -293,6 +293,29 @@
             font-size: 18px;
             line-height: 1;
         }
+
+        .btn-voice {
+            background: #3d3d3d;
+            color: #888;
+            border: 1px solid #4d4d4d;
+            padding: 12px;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .btn-voice.active {
+            background: #263d26;
+            color: #51cf66;
+            border-color: #365d36;
+        }
+
+        .btn-voice:hover:not(:disabled) {
+            background: #4d4d4d;
+        }
+
+        .btn-voice.active:hover:not(:disabled) {
+            background: #2d4d2d;
+        }
     </style>
 </head>
 
@@ -337,6 +360,8 @@
                 <div class="content">
                     <strong>Desktop:</strong> Enable Bluetooth → Click Connect<br><br>
                     <strong>Android:</strong> Enable Bluetooth & Location → Grant permissions<br><br>
+                    <strong>Voice Control:</strong> Say "Desk" before commands<br>
+                    Examples: "Desk up", "Desk down", "Desk stop", "Desk stand"<br><br>
                     <em>⚠️ Android needs Location ON to find BLE devices</em>
                 </div>
             </details>
@@ -359,6 +384,10 @@
                 <button class="btn-memory" onclick="sendCommand('mem1')">MEM 1</button>
                 <button class="btn-memory" onclick="sendCommand('mem2')">MEM 2</button>
             </div>
+
+            <button class="btn-voice" id="voiceBtn" onclick="toggleVoice()">
+                🎤 Voice Control: OFF
+            </button>
 
             <button class="btn-stop" onclick="sendCommand('stop')">■ STOP</button>
         </div>
@@ -492,6 +521,96 @@
         downBtn.addEventListener('mouseleave', stopMoving);
         downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('down'); });
         downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopMoving(); });
+
+        // Voice Control
+        let recognition = null;
+        let isVoiceActive = false;
+
+        function initVoiceRecognition() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                document.getElementById('voiceBtn').disabled = true;
+                document.getElementById('voiceBtn').textContent = '🎤 Not Supported';
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = true;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+
+            recognition.onresult = (event) => {
+                const last = event.results.length - 1;
+                const command = event.results[last][0].transcript.toLowerCase().trim();
+
+                console.log('Voice heard:', command);
+
+                // Require "desk" wake word
+                if (!command.includes('desk')) {
+                    return; // Ignore commands without wake word
+                }
+
+                console.log('✓ Wake word detected:', command);
+
+                if (command.includes('up') || command.includes('raise') || command.includes('higher')) {
+                    startMoving('up');
+                    setTimeout(stopMoving, 500); // Move for 0.5s
+                } else if (command.includes('down') || command.includes('lower')) {
+                    startMoving('down');
+                    setTimeout(stopMoving, 500);
+                } else if (command.includes('stop')) {
+                    stopMoving();
+                } else if (command.includes('stand')) {
+                    sendCommand('mem2'); // Standing position
+                } else if (command.includes('sit')) {
+                    sendCommand('mem1'); // Sitting position
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Voice recognition error:', event.error);
+                if (event.error === 'no-speech') {
+                    // Ignore no-speech errors
+                    return;
+                }
+                // Auto-restart on other errors
+                if (isVoiceActive) {
+                    setTimeout(() => {
+                        if (isVoiceActive) recognition.start();
+                    }, 1000);
+                }
+            };
+
+            recognition.onend = () => {
+                // Auto-restart if still active
+                if (isVoiceActive) {
+                    recognition.start();
+                }
+            };
+        }
+
+        function toggleVoice() {
+            if (!recognition) {
+                initVoiceRecognition();
+                if (!recognition) return; // Not supported
+            }
+
+            isVoiceActive = !isVoiceActive;
+            const voiceBtn = document.getElementById('voiceBtn');
+
+            if (isVoiceActive) {
+                recognition.start();
+                voiceBtn.textContent = '🎤 Voice Control: ON';
+                voiceBtn.classList.add('active');
+            } else {
+                recognition.stop();
+                voiceBtn.textContent = '🎤 Voice Control: OFF';
+                voiceBtn.classList.remove('active');
+            }
+        }
+
+        // Initialize voice recognition on load
+        initVoiceRecognition();
 
         // PWA Install Prompt
         let deferredPrompt;

@@ -410,9 +410,18 @@
                 connectBtn.disabled = true;
                 connectBtn.textContent = 'Connecting...';
 
-                device = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: [SERVICE_UUID] }]
-                });
+                // Try to reconnect to previously paired device
+                const devices = await navigator.bluetooth.getDevices();
+                if (devices.length > 0) {
+                    // Auto-reconnect to first paired device
+                    device = devices[0];
+                    console.log('Reconnecting to:', device.name);
+                } else {
+                    // First time - show device picker
+                    device = await navigator.bluetooth.requestDevice({
+                        filters: [{ services: [SERVICE_UUID] }]
+                    });
+                }
 
                 const server = await device.gatt.connect();
                 const service = await server.getPrimaryService(SERVICE_UUID);

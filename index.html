@@ -316,6 +316,35 @@
         .btn-voice.active:hover:not(:disabled) {
             background: #2d4d2d;
         }
+
+        .voice-commands {
+            display: none;
+            background: #3d3d3d;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            font-size: 11px;
+            color: #b0b0b0;
+            border: 1px solid #4d4d4d;
+        }
+
+        .voice-commands.show {
+            display: block;
+        }
+
+        .voice-commands strong {
+            color: #51cf66;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .voice-commands code {
+            background: #2d2d2d;
+            padding: 2px 4px;
+            border-radius: 3px;
+            color: #6b9eff;
+            font-size: 10px;
+        }
     </style>
 </head>
 
@@ -386,8 +415,14 @@
             </div>
 
             <button class="btn-voice" id="voiceBtn" onclick="toggleVoice()">
-                🎤 Voice Control: OFF
+                Voice Control: OFF
             </button>
+
+            <div class="voice-commands" id="voiceCommands">
+                <strong>Say:</strong>
+                <code>Desk up</code> <code>Desk down</code> <code>Desk stop</code><br>
+                <code>Desk stand</code> <code>Desk sit</code>
+            </div>
 
             <button class="btn-stop" onclick="sendCommand('stop')">■ STOP</button>
         </div>
@@ -529,7 +564,7 @@
         function initVoiceRecognition() {
             if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
                 document.getElementById('voiceBtn').disabled = true;
-                document.getElementById('voiceBtn').textContent = '🎤 Not Supported';
+                document.getElementById('voiceBtn').textContent = 'Voice: Not Supported';
                 return;
             }
 
@@ -547,44 +582,73 @@
 
                 // Require "desk" wake word
                 if (!command.includes('desk')) {
+                    console.log('❌ No wake word');
                     return; // Ignore commands without wake word
                 }
 
-                console.log('✓ Wake word detected:', command);
+                console.log('✓ Wake word detected');
 
-                if (command.includes('up') || command.includes('raise') || command.includes('higher')) {
+                // Check commands in order of specificity
+                if (command.includes('stand')) {
+                    console.log('→ Standing position');
+                    sendCommand('mem2');
+                } else if (command.includes('sit')) {
+                    console.log('→ Sitting position');
+                    sendCommand('mem1');
+                } else if (command.includes('up') || command.includes('raise') || command.includes('higher')) {
+                    console.log('→ Moving up');
                     startMoving('up');
-                    setTimeout(stopMoving, 500); // Move for 0.5s
+                    setTimeout(stopMoving, 500);
                 } else if (command.includes('down') || command.includes('lower')) {
+                    console.log('→ Moving down');
                     startMoving('down');
                     setTimeout(stopMoving, 500);
                 } else if (command.includes('stop')) {
+                    console.log('→ Stopping');
                     stopMoving();
-                } else if (command.includes('stand')) {
-                    sendCommand('mem2'); // Standing position
-                } else if (command.includes('sit')) {
-                    sendCommand('mem1'); // Sitting position
+                } else {
+                    console.log('❓ Unknown command');
                 }
             };
 
             recognition.onerror = (event) => {
                 console.error('Voice recognition error:', event.error);
+
+                // Ignore no-speech errors (common and not a problem)
                 if (event.error === 'no-speech') {
-                    // Ignore no-speech errors
                     return;
                 }
-                // Auto-restart on other errors
-                if (isVoiceActive) {
+
+                // For other errors, try to restart if still active
+                if (isVoiceActive && event.error !== 'aborted') {
+                    console.log('Attempting to restart voice recognition...');
                     setTimeout(() => {
-                        if (isVoiceActive) recognition.start();
+                        if (isVoiceActive) {
+                            try {
+                                recognition.start();
+                            } catch (e) {
+                                console.error('Failed to restart:', e);
+                            }
+                        }
                     }, 1000);
                 }
             };
 
             recognition.onend = () => {
-                // Auto-restart if still active
+                console.log('Voice recognition ended');
+                // Auto-restart if still active and not manually stopped
                 if (isVoiceActive) {
-                    recognition.start();
+                    console.log('Restarting voice recognition...');
+                    try {
+                        recognition.start();
+                    } catch (e) {
+                        console.error('Failed to restart:', e);
+                        // If restart fails, turn off voice control
+                        isVoiceActive = false;
+                        const voiceBtn = document.getElementById('voiceBtn');
+                        voiceBtn.textContent = '🎤 Voice Control: OFF';
+                        voiceBtn.classList.remove('active');
+                    }
                 }
             };
         }
@@ -597,15 +661,18 @@
 
             isVoiceActive = !isVoiceActive;
             const voiceBtn = document.getElementById('voiceBtn');
+            const voiceCommands = document.getElementById('voiceCommands');
 
             if (isVoiceActive) {
                 recognition.start();
-                voiceBtn.textContent = '🎤 Voice Control: ON';
+                voiceBtn.textContent = 'Voice Control: ON';
                 voiceBtn.classList.add('active');
+                voiceCommands.classList.add('show');
             } else {
                 recognition.stop();
-                voiceBtn.textContent = '🎤 Voice Control: OFF';
+                voiceBtn.textContent = 'Voice Control: OFF';
                 voiceBtn.classList.remove('active');
+                voiceCommands.classList.remove('show');
             }
         }
 

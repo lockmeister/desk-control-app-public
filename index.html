@@ -4,6 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Control your Stand Desk Pro Essential via Bluetooth">
+    <meta name="theme-color" content="#2d2d2d">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
     <title>Stand Desk Control</title>
     <style>
         * {
@@ -237,6 +241,58 @@
         .note em {
             color: #ff9966;
         }
+
+        .install-banner {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid #5a6578;
+        }
+
+        .install-banner.show {
+            display: flex;
+        }
+
+        .install-banner-text {
+            flex: 1;
+            font-size: 12px;
+        }
+
+        .install-banner-text strong {
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .btn-install {
+            background: #51cf66;
+            color: #1a1a1a;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-install:hover {
+            background: #69db7c;
+        }
+
+        .btn-dismiss {
+            background: transparent;
+            color: #888;
+            padding: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            line-height: 1;
+        }
     </style>
 </head>
 
@@ -245,6 +301,15 @@
         <div class="header">
             <a href="https://standdesk.com.au/support/how-to-use-guide-stand-desk-pro-essential/" target="_blank">Stand
                 Desk Pro Essential</a>
+        </div>
+
+        <div class="install-banner" id="installBanner">
+            <div class="install-banner-text">
+                <strong>📱 Install App</strong>
+                Add to your home screen for quick access!
+            </div>
+            <button class="btn-install" id="installBtn">Install</button>
+            <button class="btn-dismiss" id="dismissBtn">×</button>
         </div>
 
         <div class="height-display">
@@ -424,6 +489,36 @@
         downBtn.addEventListener('mouseleave', stopMoving);
         downBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startMoving('down'); });
         downBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopMoving(); });
+
+        // PWA Install Prompt
+        let deferredPrompt;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBanner').classList.add('show');
+        });
+
+        document.getElementById('installBtn').addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+
+            if (outcome === 'accepted') {
+                document.getElementById('installBanner').classList.remove('show');
+            }
+            deferredPrompt = null;
+        });
+
+        document.getElementById('dismissBtn').addEventListener('click', () => {
+            document.getElementById('installBanner').classList.remove('show');
+        });
+
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js');
+        }
     </script>
 </body>
 
